@@ -1,7 +1,5 @@
 package com.touniba.common.util;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.*;
@@ -36,7 +34,6 @@ public class NetUtils {
 
     public static final Pattern PATTERN_WITH_HTTPS = Pattern.compile("^https:(//.*)$");
 
-
     /**
      * Get the protocol
      *
@@ -58,12 +55,11 @@ public class NetUtils {
      * @return
      */
     public static String ignoreHttps(String url) {
-        if (StringUtils.isEmpty(url)) {
+        if (StringUtil.isEmpty(url)) {
             return url;
         }
         return PATTERN_WITH_HTTPS.matcher(url).replaceAll("http:$1");
     }
-
 
     /**
      * Build abstract url
@@ -111,19 +107,6 @@ public class NetUtils {
         } catch (Throwable e) {
             return null;
         }
-    }
-
-    /**
-     * Transform content-type to mime-type
-     *
-     * @param contentType
-     * @return
-     */
-    public static String contentType2MimeType(String contentType) {
-        if (null == contentType || "".equals(contentType)) {
-            return "";
-        }
-        return clearSpaceAndSplit(contentType)[0];
     }
 
     /**
@@ -199,7 +182,7 @@ public class NetUtils {
      */
     public static String getDomainByUrl(String url) {
         String host = getHost(url);
-        if (!StringUtils.isEmpty(host)) {
+        if (!StringUtil.isEmpty(host)) {
             return getDomainByHost(host);
         }
         return null;
@@ -224,22 +207,6 @@ public class NetUtils {
             int dotIndex = url.lastIndexOf(".");
             if (dotIndex > index && dotIndex < url.length()) {
                 return url.substring(dotIndex + 1);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Get the file-name from disposition
-     *
-     * @param disposition
-     * @return
-     */
-    public static String getFileNameByDisposition(String disposition) {
-        String[] splits = clearSpaceAndSplit(disposition);
-        for (String str : splits) {
-            if (str.startsWith("filename") && str.contains("=")) {
-                return str.substring(str.indexOf("=")).replaceFirst("=", "");
             }
         }
         return null;
@@ -377,130 +344,6 @@ public class NetUtils {
         }
         return null;
     }
-
-    /**
-     * Reverset the host
-     *
-     * @param host
-     * @return
-     */
-    public static String reverseHost(String host) {
-        StringBuilder buf = new StringBuilder();
-        reverseAppendSplits(host, buf);
-        return buf.toString();
-
-    }
-
-    /**
-     * Reverses a url's domain. This form is better for storing in hbase. Because scans within the same domain are faster.
-     * <p/>
-     * E.g. "http://bar.foo.com:8983/to/index.html?a=b" becomes "com.foo.bar:8983:http/to/index.html?a=b".
-     *
-     * @param url url to be reversed
-     * @return Reversed url
-     * @throws MalformedURLException
-     */
-    public static String reverseUrl(String url) throws MalformedURLException {
-        return reverseUrl(new URL(url));
-    }
-
-    /**
-     * Reverses a url's domain. This form is better for storing in hbase. Because scans within the same domain are faster.
-     * <p/>
-     * E.g. "http://bar.foo.com:8983/to/index.html?a=b" becomes "com.foo.bar:http:8983/to/index.html?a=b".
-     *
-     * @param url url to be reversed
-     * @return Reversed url
-     */
-    public static String reverseUrl(URL url) {
-        String host = url.getHost();
-        String file = url.getFile();
-        String protocol = url.getProtocol();
-        int port = url.getPort();
-
-        StringBuilder buf = new StringBuilder();
-
-        /* reverse host */
-        reverseAppendSplits(host, buf);
-
-        /* add protocol */
-        buf.append(':');
-        buf.append(protocol);
-
-        /* add port if necessary */
-        if (port != -1) {
-            buf.append(':');
-            buf.append(port);
-        }
-
-        /* add path */
-        if (file.length() > 0 && '/' != file.charAt(0)) {
-            buf.append('/');
-        }
-        buf.append(file);
-
-        return buf.toString();
-    }
-
-    /**
-     * Unreverse the reverse-host
-     *
-     * @param reversedHostName
-     * @return
-     */
-    public static String unreverseHost(String reversedHostName) {
-        return reverseHost(reversedHostName); // Reversible
-    }
-
-    /**
-     * Unreverse the reverse-url
-     *
-     * @param reversedUrl
-     * @return
-     */
-    public static String unreverseUrl(String reversedUrl) {
-        StringBuilder buf = new StringBuilder(reversedUrl.length() + 2);
-
-        int pathBegin = reversedUrl.indexOf('/');
-        if (pathBegin == -1) {
-            pathBegin = reversedUrl.length();
-        }
-        String sub = reversedUrl.substring(0, pathBegin);
-
-        String[] splits = StringUtils.splitPreserveAllTokens(sub, ':'); // {<reversed host>, <port>, <protocol>}
-
-        buf.append(splits[1]); // add protocol
-        buf.append("://");
-        reverseAppendSplits(splits[0], buf); // splits[0] is reversed
-        // host
-        if (splits.length == 3) { // has a port
-            buf.append(':');
-            buf.append(splits[2]);
-        }
-        buf.append(reversedUrl.substring(pathBegin));
-        return buf.toString();
-    }
-
-    // clear space and split
-    private static String[] clearSpaceAndSplit(String str) {
-        assert null != str;
-        return str.replaceAll("\\s", "").split(";");
-    }
-
-    //
-    private static void reverseAppendSplits(String string, StringBuilder buf) {
-        String[] splits = StringUtils.split(string, '.');
-        if (splits.length > 0) {
-            for (int i = splits.length - 1; i > 0; i--) {
-                buf.append(splits[i]);
-                buf.append('.');
-            }
-            buf.append(splits[0]);
-        } else {
-            buf.append(string);
-        }
-    }
-
 
     /**
      * MimeTypes

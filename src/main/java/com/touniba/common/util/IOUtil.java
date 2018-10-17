@@ -1,11 +1,13 @@
 package com.touniba.common.util;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * The utils for io.
  */
-public class IOUtils {
+public class IOUtil {
     /**
      * Read string, represent in.readUTF()
      *
@@ -70,6 +72,43 @@ public class IOUtils {
     public static byte[] readBytes(String file) throws IOException {
         try (InputStream input = new FileInputStream(file)) {
             return readBytes(input);
+        }
+    }
+
+
+    /**
+     * 关闭对象, 屏蔽所有异常。
+     * 调用对象的close方法（如果对象有该方法的话）。
+     *
+     * @param objects 对象列表
+     */
+    public static void closeQuietly(Object... objects) {
+        for (Object obj : objects) {
+            if (obj == null) {
+                continue;
+            }
+            if (obj instanceof Closeable) {
+                try {
+                    ((Closeable) obj).close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Method method;
+            try {
+                method = obj.getClass().getMethod("close");
+                if (method != null) {
+                    method.invoke(obj);
+                }
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 }

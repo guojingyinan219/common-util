@@ -1,6 +1,5 @@
 package com.touniba.common.util;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,7 +163,6 @@ public class ReflectUtils {
         }
         return null;
     }
-
 
     /**
      * Getter method. Only public one.
@@ -340,7 +338,6 @@ public class ReflectUtils {
         return CLASS_LOADER;
     }
 
-
     /***
      * get generic types
      *
@@ -355,7 +352,6 @@ public class ReflectUtils {
         }
         return null;
     }
-
 
     /**
      * get value ,first getter then use violence
@@ -559,26 +555,26 @@ public class ReflectUtils {
         if (isBasicType(type)) {
             try {
                 if (isByte(type)) {
-                    return StringUtils.isEmpty(str) ? 0 : Byte.valueOf(str);
+                    return StringUtil.isEmpty(str) ? 0 : Byte.valueOf(str);
                 } else if (isInteger(type)) {
-                    return StringUtils.isEmpty(str) ? 0 : Integer.valueOf(str);
+                    return StringUtil.isEmpty(str) ? 0 : Integer.valueOf(str);
                 } else if (isShort(type)) {
-                    return StringUtils.isEmpty(str) ? 0 : Short.valueOf(str);
+                    return StringUtil.isEmpty(str) ? 0 : Short.valueOf(str);
                 } else if (isLong(type)) {
-                    return StringUtils.isEmpty(str) ? 0L : Long.valueOf(str);
+                    return StringUtil.isEmpty(str) ? 0L : Long.valueOf(str);
                 } else if (isFloat(type)) {
-                    return StringUtils.isEmpty(str) ? 0f :
+                    return StringUtil.isEmpty(str) ? 0f :
                             Float.valueOf(str);
                 } else if (isDouble(type)) {
-                    return StringUtils.isEmpty(str) ? 0d : Double.valueOf(str);
+                    return StringUtil.isEmpty(str) ? 0d : Double.valueOf(str);
                 } else if (isBoolean(type)) {
-                    return StringUtils.isEmpty(str) ? false : Boolean.valueOf(str);
+                    return StringUtil.isEmpty(str) ? false : Boolean.valueOf(str);
                 } else if (isString(type)) {
                     return str;
                 } else if (isClass(type)) {
                     return Class.forName(str);
                 } else if (isEnum(type)) {
-                    return StringUtils.isEmpty(str) ? null : Enum.valueOf((Class) type, str);
+                    return StringUtil.isEmpty(str) ? null : Enum.valueOf((Class) type, str);
                 }
                 return null;
             } catch (Throwable e) {
